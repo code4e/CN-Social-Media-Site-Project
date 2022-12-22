@@ -1,0 +1,17 @@
+{
+  "name": "social_media_app",
+  "version": "1.0.0",
+  "description": "A fully fledged, scalable Full Stack Social Media  Web App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  
+  "author": "Umar F",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemon": "^2.0.20"
+  }
+}
