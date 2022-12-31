@@ -1,0 +1,9 @@
+/* layout contains common style common accross all the web pages */
+*{
+    box-sizing: border-box;
+}
+
+body{
+    margin: 0;
+    background-color: aquamarine;
+}
