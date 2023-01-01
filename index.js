@@ -2,8 +2,18 @@ const express = require('express');
 const port = 8000;
 const app = express();
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+
 
 const expressLayouts = require('express-ejs-layouts');
+const db = require('./config/mongoose');
+
+//cookie parser
+app.use(cookieParser());
+
+
+//body parser
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // use static files middlleware and tell express where to look out for the static files
 app.use(express.static('./assets'));
@@ -23,8 +33,6 @@ app.use('/', require('./routes/index'));
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
-//body parser
-app.use(bodyParser.urlencoded({ extended: true }));
 
 app.listen(port, () => console.log(`Server is up and running on port ${port}`));
 
