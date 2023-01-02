@@ -1,11 +1,35 @@
 const User = require("../models/user");
 
 module.exports.profile = (req, res) => {
-    console.log('Profile ');
-    // return res.send('<h1>Profile from express called</h1>');
-    return res.render('user_profile', {
-        title: 'Profile'
+    // console.log('Profile ');
+
+    let sessionUserID = req.cookies.user_id;
+    
+    if(!sessionUserID){
+        console.log(sessionUserID);
+        return res.redirect('/users/sign-in');
+    }
+    //check if cession id exists in the database, if it does, that means user is signed in and has an active session
+    User.findById(sessionUserID, function (err, user) {
+        if (err) {
+            console.log('Error in locating user session');
+            return res.redirect('/users/sign-in');
+        }
+
+        //session is active, so show user name and email id on the profile page
+        return res.render('user_profile', {
+            title: 'Profile',
+            name: user.name,
+            email: user.email
+
+        });
+
     });
+
+    // console.log(sessionUserID);
+
+    // return res.send('<h1>Profile from express called</h1>');
+
 }
 
 
@@ -64,7 +88,7 @@ module.exports.create = (req, res) => {
             }
             if (user) {
                 console.log('User already exists in the db');
-                res.redirect('back');
+                return res.redirect('back');
             }
         });
 
@@ -81,5 +105,38 @@ module.exports.create = (req, res) => {
 // fetch the data of signed in user, i.e. create a new session for the user
 module.exports.createSession = (req, res) => {
     // console.log(req.cookies);
-    return res.send('User has signed in');
+    // return res.send('User has signed in');
+
+    //find user in db
+    User.findOne({ email: req.body.email }, function (err, user) {
+        if (err) {
+            console.log('Error locating user in db');
+            return res.redirect('back');
+        }
+        //handle user not found
+        if (!user) {
+            console.log('User not found in db');
+            return res.redirect('back');
+        }
+        //handle user found 
+        else {
+            //handle passwords mismatch
+            if (user.password !== req.body.password) {
+                console.log('Passwords do not match');
+                return res.redirect('back');
+            } else {
+                //handle session creation
+                res.cookie('user_id', user.id);
+                return res.redirect('/users/profile');
+            }
+
+        }
+
+    });
+
+}
+
+module.exports.signOut = (req, res) => {
+    res.cookie('user_id', null);
+    return res.redirect('/users/sign-in');
 }
