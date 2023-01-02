@@ -32,7 +32,7 @@ passport.use(new LocalStrategy(
 ));
 
 // serialize user, i.e. put the user.id into the cookies and not the rest of the info for encryption. Decide which key to be kept in the cookies
-passport.seriapassport.serializeUser(function (user, done) {
+passport.serializeUser(function (user, done) {
     //automatically encypts the user.id into the cookies
     return done(null, user.id);
 });
@@ -47,6 +47,37 @@ passport.deserializeUser(function (id, done) {
         return done(err, user);
     });
 });
+
+
+//check if user is authenticated, using this fn as a middleware
+passport.checkAuthentication = (req, res, next) => {
+    //passport attaches a method when authentication happens, i.e. if the user is signed in, pass on the req to the next fn i.e. users_controller action(s)
+    if(req.isAuthenticated()){
+        return next();
+    }
+    //if user is not signed in
+    return res.redirect('/users/sign-in');
+}
+
+//setting the user from the req to res locals
+passport.setAuthenticatedUser = (req, res, next) => {
+    if(req.isAuthenticated()){
+        //req.user contains the current signed in user from session cookie, we're just sending it to the locals for the views by attaching the user to the res.locals
+        res.locals.user = req.user;
+        
+    }
+    return next();
+
+}
+
+//middleware to redirect user to the profile page if they are already logged in but are trying to access sign-in/sign-up pages, which should be inaccessible at this stage
+passport.checkAlreadyLoggedIn = (req, res, next) => {
+    if(!req.isAuthenticated()){
+        return next();
+    }
+    res.redirect('/users/profile');
+}
+
 
 module.exports = passport;
 

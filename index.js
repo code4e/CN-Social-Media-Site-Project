@@ -8,6 +8,13 @@ const cookieParser = require('cookie-parser');
 const expressLayouts = require('express-ejs-layouts');
 const db = require('./config/mongoose');
 
+//used for session cookie
+const session = require('express-session');
+const passport = require('passport');
+const passportLocal = require('./config/passport-local-strategy');
+
+const MongoStore = require('connect-mongo');
+
 //cookie parser
 app.use(cookieParser());
 
@@ -24,8 +31,7 @@ app.use(expressLayouts);
 app.set('layout extractStyles', true);
 app.set('layout extractScripts', true);
 
-//use express router
-app.use('/', require('./routes/index'));
+
 
 // app.get('/', (req, res) => res.send('<h1>Upppp</h1>'))
 
@@ -34,9 +40,35 @@ app.set('view engine', 'ejs');
 app.set('views', './views');
 
 
+//use the session middleware
+app.use(session({
+    name: 'codial',
+    //change the secret key to be a complex one when going prod mode
+    secret: 'blahsomething',
+    saveUninitialized: false,
+    resave: false,
+
+    store: MongoStore.create({
+        mongoUrl: 'mongodb://localhost:27017/codial_development',
+        autoRemove: 'disabled' // Default
+    }),
+    cookie: {
+        maxAge: (1000 * 60 * 100),
+    },
+
+}));
+
+
+app.use(passport.initialize());
+
+app.use(passport.session());
+
+app.use(passport.setAuthenticatedUser);
+
+//use express router
+app.use('/', require('./routes/index'));
+
+
 app.listen(port, () => console.log(`Server is up and running on port ${port}`));
 
-// app.use((req, res, next) => {
-//     // console.log('Time:', Date.now())
-//     next();
-// });
+

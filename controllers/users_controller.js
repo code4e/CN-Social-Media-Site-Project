@@ -81,5 +81,14 @@ module.exports.create = (req, res) => {
 // fetch the data of signed in user, i.e. create a new session for the user
 module.exports.createSession = (req, res) => {
     // console.log(req.cookies);
-    return res.send('User has signed in');
+    return res.redirect('/');
+}
+
+
+//sign out the user
+module.exports.destroySession = (req, res) => {
+    req.logout(function (err) {
+        if (err) { return next(err); }
+        res.redirect('/');
+    });
 }
