@@ -1,1 +1,36 @@
-<h1>Hello from Codial / <%= title %> </h1>
+<h1>Hello from Codial / <%= title %>
+</h1>
+
+<% if (locals.user) { %>
+    <section id="post-section">
+        <h1>Posts</h1>
+        <form action="/posts/create" method="post">
+            <textarea name="content" cols="30" rows="3" placeholder="Type Here..." required></textarea>
+            <button type="submit">Post</button>
+        </form>
+    </section>
+
+    <section id="posts-list-cont">
+        <h3>
+            <%= locals.user.name %>'s posts
+        </h3>
+        <ul>
+            <% for( let post of locals.posts_list ) { %>
+                <li>
+                    <p>
+                        <%= post.content %>
+                    </p>
+
+                    <small>
+                        <span><%= post.user.name %></span>
+                        <!-- <span>
+                            <%= //post.createdAt %>
+                        </span> -->
+                    </small>
+                </li>
+                <% } %>
+        </ul>
+    </section>
+
+
+    <% } %>
