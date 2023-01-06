@@ -7,7 +7,7 @@ const passport = require('passport');
 router.use('/users', require('./users'));
 
 //only allow authenticated users to post 
-router.use('/posts', passport.checkAuthentication ,require('./posts'));
+router.use('/posts', require('./posts'));
 
 router.get('/', homeController.home);
 router.get('/home', homeController.home);
