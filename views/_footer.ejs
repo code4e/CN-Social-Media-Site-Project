@@ -1,1 +1,19 @@
-<footer>This is the footer</footer>
+<footer>
+    <h3>
+        &copy; Codial. All Rights Reserved
+    </h3>
+    <ul id="header-items-cont">
+        <li>
+            <a href="/">Home</a>
+        </li>
+
+        <% if (locals.user) { %>
+            <li>
+                <a href="/users/profile">
+                    Profile
+                </a>
+            </li>
+            <% }  %>
+    </ul>
+
+</footer>

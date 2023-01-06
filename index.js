@@ -3,7 +3,7 @@ const port = 8000;
 const app = express();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-
+const sassMiddleware = require('node-sass-middleware');
 
 const expressLayouts = require('express-ejs-layouts');
 const db = require('./config/mongoose');
@@ -18,6 +18,18 @@ const MongoStore = require('connect-mongo');
 //cookie parser
 app.use(cookieParser());
 
+
+//putting the sass middleware before the server server starts, to convert the scss to css and make that css available to the views
+app.use(sassMiddleware({
+    //where to pick up the scss files to convert to css
+    src: './assets/scss',
+    //where to put the compiled css files
+    dest: './assets/css',
+    debug: true,
+    outputStyle: 'exptended',
+    //where to look out for the css files
+    prefix: '/css'
+}));
 
 //body parser
 app.use(bodyParser.urlencoded({ extended: true }));

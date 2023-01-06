@@ -1,0 +1,23 @@
+header {
+  color: white;
+  background-color: cornflowerblue;
+  margin: 0;
+  display: flex;
+  justify-content: space-between; }
+  header h1 {
+    margin: 20px; }
+  header ul {
+    margin: 20px;
+    padding: 0;
+    list-style-type: none;
+    -webkit-padding-start: 0;
+    display: flex; }
+    header ul li {
+      margin: 5px; }
+  header a {
+    color: white;
+    text-decoration: none;
+    font-size: larger;
+    font-weight: 1000; }
+  header a:hover {
+    color: green; }
