@@ -10,27 +10,57 @@
         </form>
     </section>
 
-    <section id="posts-list-cont">
-        <h3>
-            <%= locals.user.name %>'s posts
-        </h3>
-        <ul>
-            <% for( let post of locals.posts_list ) { %>
-                <li>
-                    <p>
-                        <%= post.content %>
-                    </p>
-
-                    <small>
-                        <span><%= post.user.name %></span>
-                        <!-- <span>
-                            <%= //post.createdAt %>
-                        </span> -->
-                    </small>
-                </li>
-                <% } %>
-        </ul>
-    </section>
-
-
     <% } %>
+
+        <section id="posts-list-cont">
+
+            <ul>
+                <% for( let post of locals.posts_list ) { %>
+                    <li>
+                        <p>
+                            <%= post.content %>
+                        </p>
+
+                        <small>
+                            <span>--- <%= post.user.name %></span>
+                        </small>
+
+
+                        <div class="post-comments-list">
+                            <h3>Comments for this post</h3>
+
+                            <ul id="post-comments-<%= post.id %>">
+
+                                <% for( let comment of post.comments ) { %>
+                                    <li>
+                                        <p>
+                                            <%= comment.content %>
+                                        </p>
+                                        <small>
+                                            : - Made by - <%= comment.user.name %>
+                                        </small>
+                                    </li>
+                                    <% } %>
+
+                            </ul>
+                        </div>
+
+
+                        <div class="post-comments">
+                            <% if (locals.user) { %>
+                                <h3>Add a comment</h3>
+                                <form action="/comment/create" method="post">
+                                    <input type="text" name="content" required
+                                        placeholder="Type here to add comment...">
+                                    <input type="hidden" name="post" value=<%=post.id %> >
+                                    <button type="submit">Add comment</button>
+                                </form>
+                                <% } %>
+
+                        </div>
+                    </li>
+
+                    <hr>
+                    <% } %>
+            </ul>
+        </section>

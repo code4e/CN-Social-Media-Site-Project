@@ -25,7 +25,7 @@ app.use(sassMiddleware({
     src: './assets/scss',
     //where to put the compiled css files
     dest: './assets/css',
-    debug: true,
+    debug: false,
     outputStyle: 'exptended',
     //where to look out for the css files
     prefix: '/css'

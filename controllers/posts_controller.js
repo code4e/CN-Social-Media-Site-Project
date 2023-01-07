@@ -10,8 +10,13 @@ module.exports.create = (req, res) => {
                 return res.redirect('/');
             }
 
-            console.log('post saved to db sucessfully');
-            console.log(post);
+            // console.log('post saved to db sucessfully');
+            // console.log(post);
             return res.redirect('/');
         });
+}
+
+module.exports.createComment = (req, res) => {
+    console.log(req.body);
+    return res.redirect('back');
 }
