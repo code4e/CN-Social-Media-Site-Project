@@ -1,0 +1,47 @@
+<!-- partial to show posts -->
+
+<li>
+    <p>
+        <%= post.content %>
+            &nbsp;
+            <!-- only show the delete button to the user who is signed and only to whom has made that post -->
+            <% if (locals.user && locals.user.id==post.user.id) { %>
+                <a href="/posts/destroy/<%= post.id %> ">Delete post</a>
+                <% } %>
+
+    </p>
+
+    <small>
+        <span>--- <%= post.user.name %></span>
+    </small>
+
+
+
+
+    <div class="post-comments-list">
+        <h3>Comments for this post</h3>
+
+        <ul id="post-comments-<%= post.id %>">
+
+            <% for( let comment of post.comments ) { %>
+                <%- include("_comment",
+                // passing comment as a prop to the _comment partial
+                { comment }) %>
+                <% } %>
+
+        </ul>
+    </div>
+
+
+    <div class="post-comments">
+        <% if (locals.user) { %>
+            <h3>Add a comment</h3>
+            <form action="/comments/create" method="post">
+                <input type="text" name="content" required placeholder="Type here to add comment...">
+                <input type="hidden" name="post" value=<%=post.id %> >
+                <button type="submit">Add comment</button>
+            </form>
+            <% } %>
+
+    </div>
+</li>

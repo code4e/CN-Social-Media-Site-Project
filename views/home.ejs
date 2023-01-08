@@ -16,62 +16,11 @@
 
             <ul>
                 <% for( let post of locals.posts_list ) { %>
-                    <li>
-                        <p>
-                            <%= post.content %>
-                                &nbsp;
-                                <!-- only show the delete button to the user who is signed and only to whom has made that post -->
-                                <% if (locals.user && locals.user.id==post.user.id) { %>
-                                    <a href="/posts/destroy/<%= post.id %> ">Delete post</a>
-                                    <% } %>
-
-                        </p>
-
-                        <small>
-                            <span>--- <%= post.user.name %></span>
-                        </small>
-
-
-
-
-                        <div class="post-comments-list">
-                            <h3>Comments for this post</h3>
-
-                            <ul id="post-comments-<%= post.id %>">
-
-                                <% for( let comment of post.comments ) { %>
-                                    <li>
-                                        <p>
-                                            <%= comment.content %>
-                                                &nbsp;
-                                                <!-- show the delete comment button only to the user who made the comment and signed in -->
-                                                <% if (locals.user && (comment.user.id == locals.user.id || locals.user.id == post.user.id)) { %>
-                                                    <a href="/comments/destroy?commentID=<%= comment.id %>&postUserID=<%= post.user.id %> ">Delete comment</a>
-                                                    <% } %>
-                                        </p>
-                                        <small>
-                                            : - Made by - <%= comment.user.name %>
-                                        </small>
-                                    </li>
-                                    <% } %>
-
-                            </ul>
-                        </div>
-
-
-                        <div class="post-comments">
-                            <% if (locals.user) { %>
-                                <h3>Add a comment</h3>
-                                <form action="/comments/create" method="post">
-                                    <input type="text" name="content" required
-                                        placeholder="Type here to add comment...">
-                                    <input type="hidden" name="post" value=<%=post.id %> >
-                                    <button type="submit">Add comment</button>
-                                </form>
-                                <% } %>
-
-                        </div>
-                    </li>
+                    
+                    <!-- separate partial for showing post -->
+                    <%- include("_post", 
+                    // passing post as a prop to the _post partial
+                    { post }) %>
 
                     <hr>
                     <% } %>
