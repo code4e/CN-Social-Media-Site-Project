@@ -9,7 +9,7 @@ const passport = require('passport');
 router.get('/', (req, res) => res.render('user_profile', {title: "Users"}));
 
 
-router.get('/profile', 
+router.get('/profile/:userID', 
 //middleware to only take the user to the profile page only when the user is signed in
 passport.checkAuthentication
 , usersController.profile);
@@ -37,6 +37,10 @@ router.post('/create-session', passport.authenticate(
     'local',
     {failureRedirect: '/users/sign-in'}
 ),usersController.createSession);
+
+
+//router to update the details of the user
+router.post('/update/:userID', passport.checkAuthentication, usersController.update);
 
 router.get('/sign-out', usersController.destroySession);
 
