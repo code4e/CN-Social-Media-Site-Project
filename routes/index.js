@@ -10,7 +10,7 @@ router.use('/users', require('./users'));
 router.use('/posts', require('./posts'));
 
 //route for comment
-router.use('/comment', require('./comments'));
+router.use('/comments', require('./comments'));
 
 router.get('/', homeController.home);
 router.get('/home', homeController.home);
