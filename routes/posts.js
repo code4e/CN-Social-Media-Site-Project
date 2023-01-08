@@ -7,5 +7,8 @@ const passport = require('passport');
 
 router.post('/create', passport.checkAuthentication, postsController.create);
 
+//route to delete post and associated comments
+router.get('/destroy/:id', passport.checkAuthentication, postsController.destroy);
+
 
 module.exports = router;

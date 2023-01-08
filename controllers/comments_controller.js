@@ -46,6 +46,9 @@ module.exports.create = (req, res) => {
             //     });
         });
     });
+}
 
-
+//destroy comments
+module.exports.destroy = (req, res) => {
+    
 }

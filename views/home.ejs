@@ -19,11 +19,19 @@
                     <li>
                         <p>
                             <%= post.content %>
+                                &nbsp;
+                                <!-- only show the delete button to the user who is signed and only to whom has made that post -->
+                                <% if (locals.user && locals.user.id == post.user.id) { %>
+                                    <a href="/posts/destroy/<%= post.id %> ">Delete post</a>
+                                <% } %>
+
                         </p>
 
                         <small>
                             <span>--- <%= post.user.name %></span>
                         </small>
+
+
 
 
                         <div class="post-comments-list">
@@ -35,6 +43,8 @@
                                     <li>
                                         <p>
                                             <%= comment.content %>
+                                            &nbsp;
+                                            <a href="/comment/destroy/<%= comment.id %> ">Delete comment</a>
                                         </p>
                                         <small>
                                             : - Made by - <%= comment.user.name %>
