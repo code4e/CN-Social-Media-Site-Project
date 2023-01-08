@@ -1,5 +1,6 @@
-<h1>Hello from Codial / <%= title %>
-</h1>
+<link rel="stylesheet" href="/css/home.css">
+
+
 
 <% if (locals.user) { %>
     <section id="post-section">
@@ -12,28 +13,29 @@
 
     <% } %>
 
-        <section id="posts-list-cont">
+        <div id="home-container">
+            <section id="posts-list-cont">
 
-            <ul>
-                <% for( let post of locals.posts_list ) { %>
-                    
-                    <!-- separate partial for showing post -->
-                    <%- include("_post", 
-                    // passing post as a prop to the _post partial
-                    { post }) %>
+                <ul>
+                    <% for( let post of locals.posts_list ) { %>
 
-                    <hr>
+                        <!-- separate partial for showing post -->
+                         <!-- passing post as a prop to the _post partial  -->
+                        <%- include("_post", { post }) %>
+
+                            <hr>
+                            <% } %>
+                </ul>
+            </section>
+
+            <section id="user-friends">
+                <h4>Friends</h4>
+                <% for( let u of locals.all_users ) { %>
+                    <p>
+                        <a href="/users/profile/<%= u.id %> ">
+                            <%= u.name %>
+                        </a>
+                    </p>
                     <% } %>
-            </ul>
-        </section>
-
-        <section id="user-friends">
-            <h4>Friends</h4>
-            <% for( let u of locals.all_users ) { %>
-                <p>
-                    <a href="/users/profile/<%= u.id %> ">
-                        <%= u.name %>
-                    </a>
-                </p>
-            <% } %>
-        </section>
+            </section>
+        </div>

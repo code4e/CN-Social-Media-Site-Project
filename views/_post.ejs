@@ -24,10 +24,9 @@
         <ul id="post-comments-<%= post.id %>">
 
             <% for( let comment of post.comments ) { %>
-                <%- include("_comment",
-                // passing comment as a prop to the _comment partial
-                { comment }) %>
-                <% } %>
+                <!-- passing comment as a prop to the _comment partial -->
+                <%- include("_comment", { comment }) %>
+                    <% } %>
 
         </ul>
     </div>
