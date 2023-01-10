@@ -10,9 +10,11 @@ module.exports.create = async (req, res) => {
             user: req.user.id
         });
         console.log(`Post ${post} created sucessfully!`);
+        req.flash('success', 'Post created successfully');
         return res.redirect('/');
     } catch (error) {
         console.log(`Error occured with ${error}`);
+        req.flash('error', 'Oops! Something went wrong! Please try again');
         return res.redirect('back');
     }
 
@@ -44,13 +46,16 @@ module.exports.destroy = async (req, res) => {
             //delete the comments on that post by finding out those comments that have been made on this post using post id, and then deleting them from db
             let comments = await Comment.deleteMany({ post: post._id });
             console.log(`Comments on this post - ${post} have all been deleted - ${comments} `);
+            req.flash('success', 'Post and associated comments have been deleted successfully!');
 
         } else {
+            req.flash('warning', 'Post does not exist, so cannot be deleted!');
             console.log('Post does not exist, so cannot be deleted!');
         }
         res.redirect('/');
     } catch (error) {
         console.log(`Error occured with ${error}`);
+        req.flash('error', 'Oops! Something went wrong! Please try again');
         return res.redirect('back');
     }
 

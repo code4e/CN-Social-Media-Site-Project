@@ -17,13 +17,16 @@ module.exports.create = async (req, res) => {
             // now that the comment has been saved to Comment model, push the comment id to the post document's comments array for the post on which the comment has been made
             post.comments.push(comment);
             post.save();
+            req.flash('success', 'Comment posted sucessfully');
         } else {
+            req.flash('warning', 'Oops! post not found');
             console.log('Oops! post not found');
         }
         return res.redirect('back');
 
     } catch (error) {
         console.log(`Error occured with ${error}`);
+        req.flash('error', 'Oops! Something went wrong! Please try again');
         return res.redirect('back');
     }
 
@@ -82,15 +85,18 @@ module.exports.destroy = async (req, res) => {
                 {$pull: { comments: req.query.commentID }});
 
             console.log(`Comment - ${comment} has been deleted from the Post - ${post}`);
+            req.flash('success', 'Comment deleted successfully!');
 
         } else {
             console.log('Comment not found or unauthorzied access');
+            req.flash('warning', 'Comment not found or unauthorzied access');
         }
         return res.redirect('back');
 
 
     } catch (error) {
         console.log(`Error occured with ${error}`);
+        req.flash('error', 'Oops! Something went wrong! Please try again');
         return res.redirect('back');
     }
 

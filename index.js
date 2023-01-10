@@ -15,6 +15,12 @@ const passportLocal = require('./config/passport-local-strategy');
 
 const MongoStore = require('connect-mongo');
 
+
+//connect flash for flash messages. Sending flash message when the user signs in in the locals with the session cookie, only for the first time and then clear it on subsequent requests
+const flash = require('connect-flash');
+const customFlashMWare = require('./config/flash_middleware');
+
+
 //cookie parser
 app.use(cookieParser());
 
@@ -76,6 +82,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(passport.setAuthenticatedUser);
+
+//use connect-flash MW after using session MW so that the session has already been estalibshed and cookies have been defined by the time we're sending out the flash message(s)
+// this is because connect-flash uses session cookie to store the flash message(s)
+app.use(flash());
+
+app.use(customFlashMWare.setFlash);
 
 //use express router
 app.use('/', require('./routes/index'));

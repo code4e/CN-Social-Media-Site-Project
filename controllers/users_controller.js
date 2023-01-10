@@ -72,14 +72,18 @@ module.exports.create = async (req, res) => {
                 //only create the user, if it does not already exists in db
                 let user = await User.create({ ...req.body });
                 console.log(`User ${user} created and signed up sucessfully in the db`);
+
+                req.flash('success', `Sign Up successful! Please login to continue`);
                 return res.redirect('/users/sign-in');
             } else {
                 console.log(`User already exists in the db under ${user}`);
+                req.flash('warning', `User ${user.email} already exists! Try again`);
                 res.redirect('back');
             }
 
         } catch (error) {
             console.log(`Error occured with ${error}`);
+            req.flash('error', 'Oops! Something went wrong! Try again');
             return res.redirect('back');
         }
         //callback code
@@ -116,14 +120,22 @@ module.exports.create = async (req, res) => {
 // fetch the data of signed in user, i.e. create a new session for the user
 module.exports.createSession = (req, res) => {
     // console.log(req.cookies);
+    //set the flash message for successful session creation i.e. siging in
+    req.flash('success', `Logged in Successully! Welcome ${req.user.name}`);
     return res.redirect('/');
 }
 
 
 //sign out the user
 module.exports.destroySession = (req, res) => {
+    //set the flash message for successful session destruction i.e. signing out
+    console.log('Signed out');
+    
     req.logout(function (err) {
+        
         if (err) { return next(err); }
+
+        req.flash('success', 'You have logged out successfully!');
         res.redirect('/');
     });
 }
@@ -138,11 +150,13 @@ module.exports.update = async (req, res) => {
         //convert to async code
         try {
             let user = await User.findByIdAndUpdate(req.params.userID, { ...req.body });
-            console.log(`User - ${user} has bee updated sucessfully in the db`);
+            console.log(`User - ${user} has bee updated successfully in the db`);
+            req.flash('success', `User ${user.name} updated successfully`);
             return res.redirect('back');
 
         } catch (error) {
             console.log(`Error occured with ${error}`);
+            req.flash('error', 'Oops! Something went wrong! Please try again');
             return res.redirect('back');
         }
         //callback code
@@ -159,6 +173,7 @@ module.exports.update = async (req, res) => {
     }
     //if the user is trying to update the details of some other user, by fiddling with the params at the front end and putting the some other user's userID in the params
     // send an unauthorized status to prevent this.
+    req.flash('warning', 'Sorry! You are not authorized');
     return res.status(401).send('Unauthorized');
 
 

@@ -7,31 +7,39 @@ const User = require('../models/user');
 passport.use(new LocalStrategy(
     {
         // usernameFiled in the schema that we are using to authenticate is email, so we provide the value as email
-        usernameField: "email"
+        usernameField: "email",
+
+        //for making req object accessible in the below callback as the first argument
+        passReqToCallback: true
     },
-    function (email, password, done) {
+    function (req, email, password, done) {
 
         //find the user in the db and establish the identity
         User.findOne({ email: email }, function (err, user) {
             //handle err
             if (err) {
+
                 console.log('Error in finding user --> passport');
+                req.flash('error', 'Error in finding the user');
                 return done(err);
             }
 
             // handle user not found or passport don't match
             if (!user || user.password !== password) {
                 console.log('Invalid username/password');
+                req.flash('error', 'Invalid username/password! Please try again');
                 return done(null, false);
             }
 
-            //everything good, so send the user fetched from db to the done() to pass it onto the next middleware
+
+
+            //everything good, so send the user fetched from db to the done() to pass it onto the next middleware i.e serialize the user as a next step
             return done(null, user);
         });
     }
 ));
 
-// serialize user, i.e. put the user.id into the cookies and not the rest of the info for encryption. Decide which key to be kept in the cookies
+// serialize user, i.e. put the user.id into the cookies and not the rest of the info for encryption. Decide which key is to be kept in the cookies
 passport.serializeUser(function (user, done) {
     //automatically encypts the user.id into the cookies
     return done(null, user.id);
@@ -71,12 +79,7 @@ passport.setAuthenticatedUser = (req, res, next) => {
 }
 
 //middleware to redirect user to the profile page if they are already logged in but are trying to access sign-in/sign-up pages, which should be inaccessible at this stage
-passport.checkAlreadyLoggedIn = (req, res, next) => {
-    if(!req.isAuthenticated()){
-        return next();
-    }
-    res.redirect('/users/profile');
-}
+passport.checkAlreadyLoggedIn = (req, res, next) => !req.isAuthenticated() ? next() : res.redirect(`/users/profile/${req.user.id}`);
 
 
 module.exports = passport;
