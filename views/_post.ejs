@@ -1,13 +1,15 @@
 <!-- partial to show posts -->
 
-<li>
+<li id="post-<%= post.id %>">
     <p>
         <%= post.content %>
             &nbsp;
             <!-- only show the delete button to the user who is signed and only to whom has made that post -->
             <% if (locals.user && locals.user.id==post.user.id) { %>
-                <a href="/posts/destroy/<%= post.id %> ">Delete post</a>
+                <a  class="delete-post-button" href="/posts/destroy/<%= post.id %> ">Delete post</a>
                 <% } %>
+
+                
 
     </p>
 
@@ -43,4 +45,6 @@
             <% } %>
 
     </div>
+
+    <hr>
 </li>

@@ -10,6 +10,11 @@
 
   <!-- noty js cdn -->
   <script src="https://cdn.jsdelivr.net/npm/noty@3.2.0-beta/lib/noty.min.js"></script>
+
+
+  <!-- jquery cd -->
+  <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noty@3.2.0-beta/lib/noty.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noty@3.2.0-beta/lib/themes/nest.css">
 
@@ -32,8 +37,7 @@
 <body>
 
   <%- include('_header'); -%>
-
-
+  
   <main id="layout-main">
     <%-body%>
   </main>
@@ -42,42 +46,43 @@
 
 
 
+
+
   <!-- put the scripts here using express-ejs-layouts -->
   <%- script %>
 
 
 
+
   <script>
-    let locals = <%- JSON.stringify(locals) %>
-    if (locals.flash && locals.flash.success.length > 0) {
-      new Noty({
-        type: 'success',
-        layout: 'topRight',
-        theme: 'nest',
-        text: "<%= locals.flash.success%>",
-        timeout: '1500'
+    <% if (locals.flash && locals.flash.success.length > 0) { %>
+    new Noty({
+      type: 'success',
+      layout: 'topRight',
+      theme: 'nest',
+      text: "<%= locals.flash.success%>",
+      timeout: '1500'
 
-      }).show();
+    }).show();
+    <% } else if (locals.flash && locals.flash.error.length > 0) {%>
+    new Noty({
+      type: 'error',
+      layout: 'topRight',
+      theme: 'nest',
+      text: "<%= locals.flash.error%>",
+      timeout: '1500'
 
-    } else if (locals.flash && locals.flash.error.length > 0) {
-      new Noty({
-        type: 'error',
-        layout: 'topRight',
-        theme: 'nest',
-        text: "<%= locals.flash.error%>",
-        timeout: '1500'
+    }).show();
+    <% } else if (locals.flash && locals.flash.warning.length > 0) {%>
+    new Noty({
+      type: 'warning',
+      layout: 'topRight',
+      theme: 'nest',
+      text: "<%= locals.flash.warning%>",
+      timeout: '1500'
 
-      }).show();
-    } else if (locals.flash && locals.flash.warning.length > 0) {
-      new Noty({
-        type: 'warning',
-        layout: 'topRight',
-        theme: 'nest',
-        text: "<%= locals.flash.warning%>",
-        timeout: '1500'
-
-      }).show();
-    }
+    }).show();
+    <% } %>
   </script>
 
 </body>
