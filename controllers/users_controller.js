@@ -130,9 +130,9 @@ module.exports.createSession = (req, res) => {
 module.exports.destroySession = (req, res) => {
     //set the flash message for successful session destruction i.e. signing out
     console.log('Signed out');
-    
+
     req.logout(function (err) {
-        
+
         if (err) { return next(err); }
 
         req.flash('success', 'You have logged out successfully!');
@@ -149,10 +149,31 @@ module.exports.update = async (req, res) => {
     if (req.user.id == req.params.userID) {
         //convert to async code
         try {
-            let user = await User.findByIdAndUpdate(req.params.userID, { ...req.body });
-            console.log(`User - ${user} has bee updated successfully in the db`);
-            req.flash('success', `User ${user.name} updated successfully`);
-            return res.redirect('back');
+            let user = await User.findById(req.params.userID);
+            //since we've made the update user form in the views as multipart, we cannot directly parse in req.body. For this, we'll use multer
+            User.uploadedAvatar(req, res, function (err) {
+                if (err) {
+                    console.log('********multer error********', err);
+                }
+
+                //update the user
+                user.name = req.body.name;
+                user.email = req.body.email;
+
+                //if user is uploading a file, then only we are saving it in the storage
+                if (req.file) {
+                    //saving the path in the db where file is stored in the storage
+                    user.avatar = `${User.avatarPath}/${req.file.filename}`;
+                }
+
+                user.save();
+
+                console.log(`User - ${user} has bee updated successfully in the db`);
+                req.flash('success', `User ${user.name} updated successfully`);
+                return res.redirect('back');
+
+            });
+
 
         } catch (error) {
             console.log(`Error occured with ${error}`);
@@ -173,8 +194,9 @@ module.exports.update = async (req, res) => {
     }
     //if the user is trying to update the details of some other user, by fiddling with the params at the front end and putting the some other user's userID in the params
     // send an unauthorized status to prevent this.
-    req.flash('warning', 'Sorry! You are not authorized');
-    return res.status(401).send('Unauthorized');
-
+    else {
+        req.flash('warning', 'Sorry! You are not authorized');
+        return res.status(401).send('Unauthorized');
+    }
 
 }

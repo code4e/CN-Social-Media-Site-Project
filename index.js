@@ -40,8 +40,15 @@ app.use(sassMiddleware({
 //body parser
 app.use(bodyParser.urlencoded({ extended: true }));
 
+
+
 // use static files middlleware and tell express where to look out for the static files
 app.use(express.static('./assets'));
+
+
+// make the /uploads route available to the browser
+app.use('/uploads', express.static(__dirname + '/uploads'));
+
 //use ejs layouts before rendering views to detect that layout is being used at the front end
 app.use(expressLayouts);
 
@@ -89,8 +96,13 @@ app.use(flash());
 
 app.use(customFlashMWare.setFlash);
 
+
+
 //use express router
 app.use('/', require('./routes/index'));
+
+
+
 
 
 app.listen(port, () => console.log(`Server is up and running on port ${port}`));

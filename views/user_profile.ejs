@@ -1,17 +1,23 @@
 <link rel="stylesheet" href="/css/user_profile.css">
 
+
+<img src="<%= locals.user.avatar %>" alt="<%= locals.user.name %>" width="100">
+
 <h1>Hello from users <%= locals.profile_user.name %>
 </h1>
 <h2>
     <%= locals.profile_user.email %>
 </h2>
 
+
+
 <!-- display the change profile details form only if the signed in user is viewing their own profile page -->
 <% if (locals.user.id==locals.profile_user.id) { %>
     <h4>Change profile details</h4>
-    <form method="post" action="/users/update/<%= locals.profile_user.id %> ">
+    <form method="post" action="/users/update/<%= locals.profile_user.id %>" enctype="multipart/form-data">
         <input type="text" name="name" placeholder="Your Name" value="<%= locals.profile_user.name %> " required>
         <input type="email" name="email" id="" placeholder="Your Email" value="<%= locals.profile_user.email %> " required>
+        <input type="file" name="avatar" placeholder="Profile Picture">
         <button type="submit">Update Details</button>
     </form>
     <% } else { %>
