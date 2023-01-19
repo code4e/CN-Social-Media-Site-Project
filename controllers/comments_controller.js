@@ -4,6 +4,8 @@ const Post = require('../models/post');
 module.exports.create = async (req, res) => {
     //convert to async code
     try {
+
+        console.log(req.body);
         //save comment made by the signed in user to the db, but first check if the post that we're commenting on exists in the db or not
         let post = await Post.findById(req.body.post);
         //save the comment only if the post exists
@@ -17,12 +19,29 @@ module.exports.create = async (req, res) => {
             // now that the comment has been saved to Comment model, push the comment id to the post document's comments array for the post on which the comment has been made
             post.comments.push(comment);
             post.save();
-            req.flash('success', 'Comment posted sucessfully');
+
+            comment = await comment.populate('post');
+            comment = await comment.populate('user');
+
+            // req.flash('success', 'Comment posted sucessfully');
+
+            //check if the request is ajax request, then create the comment
+            if (req.xhr) {
+                return res.status(200).json({
+                    data: {
+                        comment: comment
+                    },
+                    message: 'Comment created successfully'
+                });
+            }
+
+
         } else {
             req.flash('warning', 'Oops! post not found');
             console.log('Oops! post not found');
+            return res.redirect('back');
         }
-        return res.redirect('back');
+
 
     } catch (error) {
         console.log(`Error occured with ${error}`);
@@ -76,16 +95,26 @@ module.exports.destroy = async (req, res) => {
         if (comment && (comment.user == req.user.id || req.user.id == req.query.postUserID)) {
             //first remove the comment from Comment model in db, before deleting the comment itself, save the postID to reference to the Post model to remove
             // the comment id from the comments array as well
+            let commentId = comment.id;
             let postId = comment.post;
+
             comment.remove();
 
             //remove the comment id from the comments array in the post as well.
-            let post = await Post.findByIdAndUpdate(postId, 
+            let post = await Post.findByIdAndUpdate(postId,
                 //pull ou the comment id from the comments array of that post
-                {$pull: { comments: req.query.commentID }});
+                { $pull: { comments: req.query.commentID } });
 
             console.log(`Comment - ${comment} has been deleted from the Post - ${post}`);
-            req.flash('success', 'Comment deleted successfully!');
+            // req.flash('success', 'Comment deleted successfully!');
+            if (req.xhr) {
+                return res.status(200).json({
+                    data: {
+                        commentId : commentId
+                    },
+                    message: 'Comment deleted successfully!'
+                });
+            }
 
         } else {
             console.log('Comment not found or unauthorzied access');

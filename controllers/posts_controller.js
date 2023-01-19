@@ -14,7 +14,7 @@ module.exports.create = async (req, res) => {
 
 
         console.log(`Post ${post} created sucessfully!`);
-        req.flash('success', 'Post created successfully');
+        // req.flash('success', 'Post created successfully');
 
         // return res.redirect('/');
         //instead of returning to the home page, first check if it is and ajax request, then send the newly created post to the front end through res.json to append it in the UI without reloading
@@ -63,14 +63,14 @@ module.exports.destroy = async (req, res) => {
             //delete the comments on that post by finding out those comments that have been made on this post using post id, and then deleting them from db
             let comments = await Comment.deleteMany({ post: post._id });
             console.log(`Comments on this post - ${post} have all been deleted - ${comments} `);
-            req.flash('success', 'Post and associated comments have been deleted successfully!');
+            // req.flash('success', 'Post and associated comments have been deleted successfully!');
             //instead of redirecting back to the page, check if the delete request made is ajax request or not, send send json data
             if (req.xhr) {
                 return res.status(200).json({
                     data: {
                         post_id: postIdToBeDeleted
                     },
-                    message: 'Post deleted successfully'
+                    message: 'Post and associated comments have been deleted successfully!'
                 });
             }
 
