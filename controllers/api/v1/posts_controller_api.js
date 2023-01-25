@@ -10,7 +10,7 @@ module.exports.index = async (req, res) => {
             path: 'comments',
             populate: {
                 path: 'user',
-                select: { '_id': 1,'email':1, 'name': 1, 'avatar': 1}
+                // select: { '_id': 1,'email':1, 'name': 1, 'avatar': 1}
             }
         }).sort({ createdAt: -1 });
 
@@ -43,7 +43,7 @@ module.exports.destroy = async (req, res) => {
     try {
         //first, check if post to be deleted even exists in db or not
         let post = await Post.findById(req.query.id);
-        if (post) {
+        if (post && post.user == req.user.id) {
 
             let postIdToBeDeleted = post.id;
             post.remove();
@@ -59,8 +59,10 @@ module.exports.destroy = async (req, res) => {
 
 
         } else {
-            return res.json({
-                message: 'Post does not exist, so cannot be deleted!'
+            return res.
+            // status(401).
+            json({
+                message: 'Post cannot be deleted!'
             });
 
         }

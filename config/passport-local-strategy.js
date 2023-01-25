@@ -31,8 +31,6 @@ passport.use(new LocalStrategy(
                 return done(null, false);
             }
 
-
-
             //everything good, so send the user fetched from db to the done() to pass it onto the next middleware i.e serialize the user as a next step
             return done(null, user);
         });
