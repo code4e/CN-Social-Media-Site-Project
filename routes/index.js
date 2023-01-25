@@ -9,6 +9,10 @@ router.use('/users', require('./users'));
 //only allow authenticated users to post 
 router.use('/posts', require('./posts'));
 
+
+//redirect all api requests to the api routes folder
+router.use('/api', require('./api/index'));
+
 //route for comment
 router.use('/comments', require('./comments'));
 

@@ -1,4 +1,6 @@
 const User = require("../models/user");
+const path = require('path');
+const fs = require('fs');
 
 module.exports.profile = async (req, res) => {
     //convert to async
@@ -162,6 +164,11 @@ module.exports.update = async (req, res) => {
 
                 //if user is uploading a file, then only we are saving it in the storage
                 if (req.file) {
+                    //check if the file path is already there and that file is also there. If yes, then remove the previous avatar image and save the new one
+                    if (user.avatar && checkFileExistsSync(path.join(__dirname, '..', user.avatar))) {
+                        fs.unlinkSync(path.join(__dirname, '..', user.avatar));
+                    }
+
                     //saving the path in the db where file is stored in the storage
                     user.avatar = `${User.avatarPath}/${req.file.filename}`;
                 }
@@ -199,4 +206,14 @@ module.exports.update = async (req, res) => {
         return res.status(401).send('Unauthorized');
     }
 
+}
+
+function checkFileExistsSync(filepath) {
+    let flag = true;
+    try {
+        fs.accessSync(filepath, fs.constants.F_OK);
+    } catch (e) {
+        flag = false;
+    }
+    return flag;
 }
