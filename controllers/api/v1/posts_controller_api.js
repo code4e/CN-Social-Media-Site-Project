@@ -16,7 +16,6 @@ module.exports.index = async (req, res) => {
 
         let users = await User.find({});
 
-
         //instead of sending rendered html files, we'll send an api to send all the posts
         // return res.render('home', {
         //     title: 'Social Media Home',
