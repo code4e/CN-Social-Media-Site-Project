@@ -1,6 +1,8 @@
 const { post } = require('jquery');
 const Comment = require('../models/comment');
 const Post = require('../models/post');
+const commentsMailer = require('../mailers/comments_mailer');
+
 module.exports.create = async (req, res) => {
     //convert to async code
     try {
@@ -22,6 +24,9 @@ module.exports.create = async (req, res) => {
 
             comment = await comment.populate('post');
             comment = await comment.populate('user');
+
+            //after the comment has been created, send the email to the user who has commented
+            commentsMailer.newComment(comment);
 
             // req.flash('success', 'Comment posted sucessfully');
 
