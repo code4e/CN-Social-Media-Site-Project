@@ -5,9 +5,8 @@ const crypto = require('crypto');
 
 //tell passport to use the google outh2 for sign in / sign up
 passport.use(new GoogleOAuth2Strategy({
-    clientID: '', //your client ID
-    clientSecret: '', // your client secret
-    
+    clientID: '1025038679354-30n6tq00nb8muhgft32v1df5b36svg72.apps.googleusercontent.com',
+    clientSecret: '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',
     callbackURL: 'http://localhost:8000/users/auth/google/callback',
     passReqToCallback: true
 },

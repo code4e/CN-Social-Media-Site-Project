@@ -2,6 +2,8 @@ const { post } = require('jquery');
 const Comment = require('../models/comment');
 const Post = require('../models/post');
 const commentsMailer = require('../mailers/comments_mailer');
+const queue = require('../config/kue');
+const commentEmailWorker = require('../workers/comment_email_worker');
 
 module.exports.create = async (req, res) => {
     //convert to async code
@@ -25,8 +27,15 @@ module.exports.create = async (req, res) => {
             comment = await comment.populate('post');
             comment = await comment.populate('user');
 
-            //after the comment has been created, send the email to the user who has commented
-            commentsMailer.newComment(comment);
+            //after the comment has been created, send the email to the user who has commented by enqueing it in the email queue
+            // commentsMailer.newComment(comment);
+
+            let job = queue.create('emails', comment).save(function(err){
+                if(err){console.log('Error occured while pushing the job in the queue'); return;}
+                console.log('Job enqueued with', job.id);
+            });
+
+
 
             // req.flash('success', 'Comment posted sucessfully');
 
