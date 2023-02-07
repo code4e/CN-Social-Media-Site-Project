@@ -3,38 +3,51 @@
 
 
 <% if (locals.user) { %>
-    <section id="post-section">
-        <h1>Posts</h1>
-        <form action="/posts/create" method="post" id="new-post-form">
-            <textarea name="content" cols="30" rows="3" placeholder="Type Here..." required></textarea>
-            <button type="submit">Post</button>
-        </form>
-    </section>
+<section id="post-section">
+  <h1>Posts</h1>
 
+
+  <form action="/posts/create" method="post" id="new-post-form">
+    <!-- <textarea name="content" cols="30" rows="3" placeholder="Type Here..." required></textarea> -->
+    <div class="form-floating m-3" >
+      <textarea class="form-control" name="content" placeholder="Type Here..." id="floatingTextarea2" style="height: 100px; width: 50%" required></textarea>
+      <label for="floatingTextarea2" class="pb-5 text-secondary">Post Here...</label>
+    </div>
+    <button type="submit" class="btn btn-primary ms-3">Post</button>
+  </form>
+</section>
+
+<% } %>
+
+<div id="home-container">
+  <section id="posts-list-cont">
+
+    <ul class="list-group">
+      <% for( let post of locals.posts_list ) { %>
+
+      <!-- separate partial for showing post -->
+      <!-- passing post as a prop to the _post partial  -->
+      <%- include("_post", { post }) %>
+      <% } %>
+    </ul>
+
+
+
+
+
+  </section>
+
+  <% if (locals.user) { %>
+  <section id="user-friends">
+    <h4>Friends</h4>
+    <% for( let u of locals.all_users ) { %>
+    <p>
+      <a href="/users/profile/<%= u.id %> ">
+        <%= u.name %>
+      </a>
+    </p>
     <% } %>
-
-        <div id="home-container">
-            <section id="posts-list-cont">
-
-                <ul>
-                    <% for( let post of locals.posts_list ) { %>
-
-                        <!-- separate partial for showing post -->
-                         <!-- passing post as a prop to the _post partial  -->
-                        <%- include("_post", { post }) %>                            
-                            <% } %>
-                </ul>
-            </section>
-
-            <section id="user-friends">
-                <h4>Friends</h4>
-                <% for( let u of locals.all_users ) { %>
-                    <p>
-                        <a href="/users/profile/<%= u.id %> ">
-                            <%= u.name %>
-                        </a>
-                    </p>
-                    <% } %>
-            </section>
-        </div>
-        <script src="/js/home_posts.js"></script>
+  </section>
+  <% } %>
+</div>
+<script src="/js/home_posts.js"></script>

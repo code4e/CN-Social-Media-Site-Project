@@ -16,6 +16,9 @@ router.use('/api', require('./api/index'));
 //route for comment
 router.use('/comments', require('./comments'));
 
+//route for likes
+router.use('/likes', require('./likes'));
+
 router.get('/', homeController.home);
 router.get('/home', homeController.home);
 

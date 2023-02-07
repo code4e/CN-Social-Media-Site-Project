@@ -3,15 +3,14 @@
 
     //posts
     postsList.click(function (event) {
-
         //check if the target elemnent clicked is the delete post button
-        if (event.target.className == "delete-post-button") {
+        if (event.target.classList.contains("delete-post-button")) {
             event.preventDefault();
             let deletePostBtn = $(event.target);
             let deleteLink = deletePostBtn.attr('href');
+
             //delete the post whose delete button is clicked on the basis of the delete link
             deletePost(deleteLink);
-
         } else if (event.target.className == "delete-comment-button") {
             event.preventDefault();
             deleteCommentLink = $(event.target).attr('href');
@@ -21,7 +20,6 @@
     //submit new post form data through ajax
     let createPost = function () {
         let newPostForm = $("#new-post-form");
-        // console.log(newPostForm);
 
         newPostForm.submit(event => {
             event.preventDefault();
@@ -51,39 +49,51 @@
         })
     }
 
-
     //create a post in the DOM to show in the UI
     let appendCreatedPostToDOM = function (post) {
         let newPostItem = $(`
-        <li id="post-${post._id}">
-            <p>
-                ${post.content}
-                    &nbsp;
-                <a  class="delete-post-button" href="/posts/destroy/${post._id} ">Delete post</a>
-            </p>
-        
-            <small>
-                <span>--- ${post.user.name}</span>
-            </small>
-
-            <div class="post-comments-list">
-                <h3>Comments for this post</h3>
-        
-                <ul id="post-comments-${post._id}">
-        
-                </ul>
+        <li id="post-${post._id}" class="list-group-item bg-success p-2 m-1 overflow-auto">
+        <div class="">
+        <div class="card mb-1">
+          <h5 class="card-header">Featured</h5>
+          <div class="card-body">
+            <!-- <h5 class="card-title">Special title treatment</h5> -->
+            <div class="card-text d-flex justify-content-between align-items-end">
+              <p class="m-1">
+              ${post.content}
+              </p>
+              <small>
+              <span>--${post.user.name}</span>
+              </small>
+            </div>    
+            <!-- only show the delete button to the user who is signed and only to whom has made that post -->
+            <a class="btn btn-primary delete-post-button m-1" href="/posts/destroy/ ${post.id} ">Delete post</a>
+          </div>
+        </div>
+      </div>
+        <div class="post-comments-list mb-1">
+            <div class="accordion" id="accordion-${post.id}">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    Comments for this post
+                  </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordion-${post.id}">
+                  <div class="accordion-body">
+                    <ul id="post-comments-${post._id}" class="list-group">
+                      </ul>             
+                  </div>
+                </div>
+              </div>
             </div>
-        
             <div class="post-comments">
-             
-                    <h3>Add a comment</h3>
-                    <form action="/comments/create" method="post">
-                        <input type="text" name="content" required placeholder="Type here to add comment...">
-                        <input type="hidden" name="post" value=${post._id}>
-                        <button type="submit">Add comment</button>
-                    </form>
-                
-        
+                <h3>Add a comment</h3>
+                <form action="/comments/create" method="post">
+                    <input type="text" name="content" required placeholder="Type here to add comment...">
+                    <input type="hidden" name="post" value=${post._id}>
+                    <button type="submit">Add comment</button>
+                </form>
             </div>
             <hr>
         </li>`);
@@ -91,14 +101,10 @@
         postsList.prepend(newPostItem);
 
         //attach comment form event when a new post is created
-        $.getScript("/js/home_post_comments.js", function () {
-            let newCommentForm = $("form", newPostItem);
-            // console.log(newCommentForm);
+        let newCommentForm = $("form", newPostItem);
 
-            //when a new post is created, dynamically attach the comment form event to the post
-            addCommentFormSubmissionEvent(newCommentForm);
-        });
-
+        //when a new post is created, dynamically attach the comment form event to the post
+        addCommentFormSubmissionEvent(newCommentForm);
     }
 
     let deletePost = function (deleteLink) {
@@ -108,6 +114,7 @@
             type: 'DELETE',
             success: function (data) {
                 $(`#post-${data.data.post_id}`).remove();
+
                 //show noty for sucessful post deletion
                 $.getScript("/js/notifications.js", function () {
                     showSucessNotification(data.message);
@@ -115,6 +122,7 @@
             },
             error: function (error) {
                 console.log('unable to delete');
+
                 //show error noty in case of failure in deletion
                 $.getScript("/js/notifications.js", function () {
                     showErrorNotification('Oops! unable to delete post');
@@ -129,6 +137,8 @@
 
     //comments
     function addCommentFormSubmissionEvent(postCommentsForm) {
+
+        console.log("event attached");
         postCommentsForm.submit(event => {
             event.preventDefault();
             //make ajax request for form submission for comment creation
