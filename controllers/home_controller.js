@@ -5,12 +5,13 @@ module.exports.home = async (req, res) => {
     //convert home controller action to async await
 
     try {
-        let posts = await Post.find({}).populate('user').populate({
+        let posts = await Post.find({}).populate('likes').populate('user').populate({
             //populate the comments inside the post, and inside each comment, populate the user as well (nested populate)
             path: 'comments',
             populate: {
-                path: 'user'
-            }
+                path: 'user',
+                path: 'likes'
+            },
         }).sort({ createdAt: -1 });
 
         let users = await User.find({});

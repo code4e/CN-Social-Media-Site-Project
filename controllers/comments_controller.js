@@ -1,6 +1,6 @@
-const { post } = require('jquery');
 const Comment = require('../models/comment');
 const Post = require('../models/post');
+const Like = require('../models/like');
 const commentsMailer = require('../mailers/comments_mailer');
 const queue = require('../config/kue');
 const commentEmailWorker = require('../workers/comment_email_worker');
@@ -111,6 +111,12 @@ module.exports.destroy = async (req, res) => {
             // the comment id from the comments array as well
             let commentId = comment.id;
             let postId = comment.post;
+
+            //delete all the likes on the comment as well
+            await Like.deleteMany({
+                likeable: commentId,
+                onModel: 'Comment'
+            });
 
             comment.remove();
 

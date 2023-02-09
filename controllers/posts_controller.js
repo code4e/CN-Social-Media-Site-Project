@@ -1,5 +1,6 @@
 const Post = require("../models/post");
 const Comment = require("../models/comment");
+const Like = require('../models/like');
 
 module.exports.create = async (req, res) => {
 
@@ -54,14 +55,31 @@ module.exports.destroy = async (req, res) => {
     try {
         //first, check if post to be deleted even exists in db or not
         let post = await Post.findById(req.params.id);
-        if (post && post.user == req.user.id) {
+        if (post && post.user == req.user.id) {            
             //if the post exists, then check if the user whose is deleting the post is the one who made the post(authorisation), if this is true, then delete that post 
             // along with the associated comments made on that post
             let postIdToBeDeleted = post.id;
-            post.remove();
+
+            //delete the likes on that post
+            await Like.deleteMany({
+                likeable: postIdToBeDeleted,
+                onModel: 'Post'
+            });
+
+
+            //delete the likes on the comments of that post
+            await Like.deleteMany({
+                likeable: {$in: post.comments},
+                onModel: 'Comment'
+            });
+
+            
 
             //delete the comments on that post by finding out those comments that have been made on this post using post id, and then deleting them from db
             let comments = await Comment.deleteMany({ post: post._id });
+
+            post.remove();
+
             console.log(`Comments on this post - ${post} have all been deleted - ${comments} `);
             // req.flash('success', 'Post and associated comments have been deleted successfully!');
             //instead of redirecting back to the page, check if the delete request made is ajax request or not, send send json data

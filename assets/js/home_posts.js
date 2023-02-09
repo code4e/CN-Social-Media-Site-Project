@@ -15,8 +15,28 @@
             event.preventDefault();
             deleteCommentLink = $(event.target).attr('href');
             deleteComment(deleteCommentLink);
+        } else if (event.target.classList.contains("like-btn")) {
+            likeItem(event.target);
         }
     });
+
+    function likeItem(likeBtn) {
+        $(likeBtn).toggleClass('fa-solid').toggleClass('fa-regular');
+
+        $.ajax({
+            type: "POST",
+            url: `/likes/toggle?id=${likeBtn.id.split("-")[2]}&likeType=${likeBtn.id.includes("post") ? "Post" : "Comment"}`,
+            success: function (data) {
+                //toggle like on DOM
+                let currentLikeCount = parseInt(likeBtn.nextElementSibling.textContent);
+                data.data.alreadyLiked ? ++currentLikeCount : --currentLikeCount;
+                likeBtn.nextElementSibling.textContent = currentLikeCount;
+            },
+            error: function (error) {
+                console.log('failed to toggle like');
+            }
+        });
+    }
     //submit new post form data through ajax
     let createPost = function () {
         let newPostForm = $("#new-post-form");
@@ -67,19 +87,19 @@
               </small>
             </div>    
             <!-- only show the delete button to the user who is signed and only to whom has made that post -->
-            <a class="btn btn-primary delete-post-button m-1" href="/posts/destroy/ ${post.id} ">Delete post</a>
+            <a class="btn btn-primary delete-post-button m-1" href="/posts/destroy/${post._id}">Delete post</a>
           </div>
         </div>
       </div>
         <div class="post-comments-list mb-1">
-            <div class="accordion" id="accordion-${post.id}">
+            <div class="accordion" id="accordion-${post._id}">
               <div class="accordion-item">
                 <h2 class="accordion-header" id="headingOne">
                   <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                     Comments for this post
                   </button>
                 </h2>
-                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordion-${post.id}">
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordion-${post._id}">
                   <div class="accordion-body">
                     <ul id="post-comments-${post._id}" class="list-group">
                       </ul>             
@@ -96,6 +116,10 @@
                 </form>
             </div>
             <hr>
+            <div class="likes-container">
+            <i class="fa-regular fa-thumbs-up like-btn" id="like-post-${post._id}"></i>
+            <span>${post.likes.length}</span>
+          </div>
         </li>`);
 
         postsList.prepend(newPostItem);
@@ -114,7 +138,6 @@
             type: 'DELETE',
             success: function (data) {
                 $(`#post-${data.data.post_id}`).remove();
-
                 //show noty for sucessful post deletion
                 $.getScript("/js/notifications.js", function () {
                     showSucessNotification(data.message);
@@ -174,19 +197,22 @@
 
 
     let appendCreatedCommentToDOM = function (comment) {
-        let newComment = $(`
-        <li id=comment-${comment._id}>
+        let newComment = $(`<li id=comment-${comment._id} class="list-group-item bg-success">
             <p>
-                ${comment.content}
-                    &nbsp;
-                    <!-- show the delete comment button only to the user who made the comment and signed in -->
+            ${comment.content}
+                &nbsp;
+                <!-- show the delete comment button only to the user who made the comment and signed in -->
                     <a class="delete-comment-button" href="/comments/destroy?commentID=${comment._id}&postUserID=${comment.post._id}">Delete comment</a>
             </p>
             <small>
                 : - Made by - ${comment.user.name}
             </small>
+            <hr>
+            <div class="likes-container">
+              <i class="fa-regular fa-thumbs-up like-btn" id="like-comment-${comment._id}"></i>
+              <span>${comment.likes.length}</span>
+            </div>
         </li>`);
-
 
         let postCommentsList = $(`#post-comments-${comment.post._id}`);
         postCommentsList.prepend(newComment);

@@ -1,8 +1,6 @@
 <!-- partial to show posts -->
 
-<!-- <small>And some small print.</small> -->
-
-
+<link rel="stylesheet" href="/css/posts.css">
 
 
 <li class="list-group-item bg-success p-2 m-1" id="post-<%= post.id %>">
@@ -76,4 +74,26 @@
   </div>
 
   <hr>
+
+  <% if(locals.user) { %>
+    <div class="likes-container">
+      <!-- check if the post is already liked, then show liked btn accordingly -->
+      <% let liked = false %>
+      <% for (let like of post.likes) { %>
+        <% if(like.user == locals.user.id) {%>
+            <% liked = true %> 
+            <% break %> 
+        <% } %>
+    <% } %>
+   
+    <% if (liked) { %>
+      <i class="fa-solid fa-thumbs-up like-btn" id="like-post-<%= post.id %>"></i>
+    <% } else { %>
+      <i class="fa-regular fa-thumbs-up like-btn" id="like-post-<%= post.id %>"></i>
+    <% } %> 
+
+      <span><%= post.likes.length %> </span>
+    </div>
+  <% } %>
+
 </li>

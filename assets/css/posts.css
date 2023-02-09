@@ -1,0 +1,9 @@
+.likes-container {
+  color: white; }
+  .likes-container i.fa-regular:hover {
+    color: brown;
+    cursor: pointer; }
+  .likes-container i.fa-solid:hover {
+    cursor: pointer; }
+  .likes-container .fa-solid {
+    color: brown; }

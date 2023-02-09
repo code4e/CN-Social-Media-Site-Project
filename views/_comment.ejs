@@ -1,16 +1,38 @@
 <!-- partial to show comments -->
-<li id="comment-<%= comment.id %>" class="list-group-item">
-    <p>
-        <%= comment.content %>
-            &nbsp;
-            <!-- show the delete comment button only to the user who made the comment and signed in -->
-            <% if (locals.user && (comment.user.id==locals.user.id || locals.user.id==post.user.id)) { %>
-                <a class="delete-comment-button" href="/comments/destroy?commentID=<%= comment.id %>&postUserID=<%= post.user.id %> ">Delete
-                    comment</a>
-                <% } %>
-    </p>
-    <small>
-        : - Made by - <%= comment.user.name %>
-    </small>
-</li>
+<li id="comment-<%= comment.id %>" class="list-group-item bg-success">
+  <p>
+    <%= comment.content %>
+    &nbsp;
+    <!-- show the delete comment button only to the user who made the comment and signed in -->
+    <% if (locals.user && (comment.user.id==locals.user.id || locals.user.id==post.user.id)) { %>
+    <a class="delete-comment-button" href="/comments/destroy?commentID=<%= comment.id %>&postUserID=<%= post.user.id %> ">Delete
+      comment</a>
+    <% } %>
+  </p>
+  <small>
+    : - Made by - <%= comment.user.name %>
+  </small>
+  <hr>
 
+
+  <% if(locals.user) { %>
+  <div class="likes-container">
+    <!-- check if the comment is already liked, then show liked btn accordingly -->
+    <% let liked = false %>
+    <% for (let like of comment.likes) { %>
+      <% if(like.user == locals.user.id) {%>
+          <% liked = true %> 
+          <% break %> 
+      <% } %>
+  <% } %>
+ 
+  <% if (liked) { %>
+    <i class="fa-solid fa-thumbs-up like-btn" id="like-comment-<%= comment.id %>"></i>
+  <% } else { %>
+    <i class="fa-regular fa-thumbs-up like-btn" id="like-comment-<%= comment.id %>"></i>
+  <% } %>    
+    <span><%= comment.likes.length %> </span>
+  </div>
+
+  <% } %> 
+</li>
