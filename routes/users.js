@@ -64,6 +64,9 @@ router.get('/auth/google/callback',
     }), usersController.createSession);
 
 
+router.patch('/toggle-friend', passport.checkAuthentication, usersController.toggleFriend);
+
+
 
 
 module.exports = router;

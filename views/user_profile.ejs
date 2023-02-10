@@ -6,21 +6,61 @@
 <h1>Hello from users <%= locals.profile_user.name %>
 </h1>
 <h2>
-    <%= locals.profile_user.email %>
+  <%= locals.profile_user.email %>
 </h2>
 
 
 
 <!-- display the change profile details form only if the signed in user is viewing their own profile page -->
 <% if (locals.user.id==locals.profile_user.id) { %>
-    <h4>Change profile details</h4>
-    <form method="post" action="/users/update/<%= locals.profile_user.id %>" enctype="multipart/form-data">
-        <input type="text" name="name" placeholder="Your Name" value="<%= locals.profile_user.name %> " required>
-        <input type="email" name="email" id="" placeholder="Your Email" value="<%= locals.profile_user.email %> " required>
-        <input type="file" name="avatar" placeholder="Profile Picture">
-        <button type="submit">Update Details</button>
-    </form>
-    <% } else { %>
-        <!-- else only show the profile info -->
+<h4>Change profile details</h4>
+<form method="post" action="/users/update/<%= locals.profile_user.id %>" enctype="multipart/form-data">
+  <input type="text" name="name" placeholder="Your Name" value="<%= locals.profile_user.name %> " required>
+  <input type="email" name="email" id="" placeholder="Your Email" value="<%= locals.profile_user.email %> " required>
+  <input type="file" name="avatar" placeholder="Profile Picture">
+  <button type="submit">Update Details</button>
+</form>
+<% } else { %>
+<!-- else only show the profile info and option to add as friend-->
+<% let exists = 0 %>
+<!-- 0 means friendship doesn't exist -->
+<!-- 1 means frienship is pending -->
+<!-- 2 means friendship is established -->
+<% for( let friend of locals.user.friendships ) { %>
+<% if (friend.to_user == locals.profile_user.id) { %>
+<% if (friend.is_pending == true) { %>
+<% exists = 1 %>
+<% } else {%>
+<% exists = 2 %>
+<% } %>
+<% } %>
+<% } %>
 
+
+
+
+
+<button class="btn btn-primary ms-3" toggle-value="
+<% if (exists == 0) { %>
+    add
+<% } else { %>
+    remove
+<% } %>
+" id="toggle-friend-btn" from_user="<%= locals.user.id %>" to_user="<%= locals.profile_user.id %>">
+
+    <% if (exists == 0) { %>
+     Add
+    <% } else { %>
+        Remove
     <% } %>
+
+    Friend
+
+</button>
+
+
+
+
+
+<script src="/js/user_profile.js"></script>
+<% } %>

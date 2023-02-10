@@ -9,7 +9,7 @@
 
   <form action="/posts/create" method="post" id="new-post-form">
     <!-- <textarea name="content" cols="30" rows="3" placeholder="Type Here..." required></textarea> -->
-    <div class="form-floating m-3" >
+    <div class="form-floating m-3">
       <textarea class="form-control" name="content" placeholder="Type Here..." id="floatingTextarea2" style="height: 100px; width: 50%" required></textarea>
       <label for="floatingTextarea2" class="pb-5 text-secondary">Post Here...</label>
     </div>
@@ -38,16 +38,82 @@
   </section>
 
   <% if (locals.user) { %>
+
+
   <section id="user-friends">
-    <h4>Friends</h4>
-    <% for( let u of locals.all_users ) { %>
-    <p>
-      <a href="/users/profile/<%= u.id %> ">
-        <%= u.name %>
-      </a>
-    </p>
-    <% } %>
+    <div class="friends-container">
+      <h4>Friends</h4>
+      <% for( let u of locals.established_friends ) { %>
+      <p>
+        <a href="/users/profile/<%= u.id %>?type=friend">
+          <%= u.name %>
+        </a>
+      </p>
+      <% } %>
+
+    </div>
+
+    <br>
+
+    <hr>
+
+    <br>
+
+    <div class="sent-friends-container">
+      <h4>Friends Requested</h4>
+      <% for( let u of locals.sent_requests ) { %>
+        <p>
+          <a href="/users/profile/<%= u.to_user.id %>?type=sent"><%= u.to_user.name %></a>
+        </p>
+      <% } %>
+    </div>
+
+    <br>
+
+    <hr>
+
+    <br>
+
+    <div class="pending-friends-container">
+      <h4>Pending Requests</h4>
+      <% for( let u of locals.pending_friends ) { %>
+        <p>
+          <a href="/users/profile/<%= u.from_user.id %>?type=pending"><%= u.from_user.name %> </a>
+        </p>
+      <% } %>
+
+    </div>
+
+
+
+    <br>
+
+    <hr>
+
+    <br>
+    <div class="all-users-container">
+      <h4>All Users</h4>
+      <% for( let u of locals.all_users ) { %>
+      <% if (u.id != locals.user.id) { %>
+      <p>
+        <a href="/users/profile/<%= u.id %>?type=all">
+          <%= u.name %>
+        </a>
+      </p>
+      <% } %>
+
+      <% } %>
+    </div>
+
+
+
+
   </section>
+
+
   <% } %>
+
+
+
 </div>
 <script src="/js/home_posts.js"></script>

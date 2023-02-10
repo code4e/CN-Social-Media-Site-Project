@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const Friendship = require('../models/friendship');
 const path = require('path');
 const fs = require('fs');
 
@@ -16,6 +17,8 @@ module.exports.profile = async (req, res) => {
         console.log(`Error occured with ${error}`);
         return res.redirect('back');
     }
+
+    //check if the req was of type pending or sent, then accordingly send the response
 
 
     //callback code
@@ -216,4 +219,94 @@ function checkFileExistsSync(filepath) {
         flag = false;
     }
     return flag;
+}
+
+
+module.exports.toggleFriend = async (req, res) => {
+
+    console.log(req.body);
+
+    //check the toggle value, if the friend already exists, then remove it, otherwise add it
+
+
+    if (req.body.toggleValue == "remove") {
+        //remove friend
+
+        //first, check if the frienship exists in the Friendship schema
+        let friendship = await Friendship.findOne(
+            { ...req.body }
+        );
+
+        if (friendship) {
+            //remove the friendships from the from_user and to_user
+            //remove the friendship from user's friendship array
+            let from_user = await User.findById(friendship.from_user);
+            let to_user = await User.findById(friendship.to_user);
+
+            if (from_user && to_user) {
+                await User.findByIdAndUpdate(friendship.from_user,
+                    { $pull: { friendships: friendship.id } });
+
+                await User.findByIdAndUpdate(friendship.to_user,
+                    { $pull: { friendships: friendship.id } });
+
+                //remove the friendship
+                friendship.remove();
+
+                return res.status(200).json({
+                    message: "Frienship removed",
+                    data: {
+                        request_status: "inactive"
+                    }
+                });
+            }
+
+        } else {
+            return res.json({
+                message: "friendship does not exist"
+            })
+        }
+    } else if (req.body.toggleValue == "add") {
+        // add friend
+        //when the user adds the friend for the first time, we add it to the Frienship Schema with isPending as true
+        try {
+            let friendship = await Friendship.create({ ...req.body });
+
+            //mark the friendship as pending in from_user
+            let from_user = await User.findById(req.body.from_user);
+
+            //mark the friendship as pending in to_user
+            let to_user = await User.findById(req.body.to_user);
+
+            //only add the friendships for the two users if they both exist
+            if (from_user && to_user) {
+                from_user.friendships.push(friendship);
+                to_user.friendships.push(friendship);
+                from_user.save();
+                to_user.save();
+            }
+
+            console.log(`${from_user.name} has sent a friend request to ${to_user.name}`);
+
+            return res.status(200).json({
+                message: "Friend request sent",
+                data: {
+                    request_status: "active"
+                }
+            });
+        } catch (error) {
+            console.log('Cannot add friend');
+            return res.status(500).json({
+                message: "Internal Server Error"
+            });
+        }
+    } else {
+        return res.status(500).json({
+            message: "Oops something went wrong!"
+        })
+    }
+
+
+
+
 }

@@ -122,7 +122,7 @@ module.exports.destroy = async (req, res) => {
 
             //remove the comment id from the comments array in the post as well.
             let post = await Post.findByIdAndUpdate(postId,
-                //pull ou the comment id from the comments array of that post
+                //pull out the comment id from the comments array of that post
                 { $pull: { comments: req.query.commentID } });
 
             console.log(`Comment - ${comment} has been deleted from the Post - ${post}`);
