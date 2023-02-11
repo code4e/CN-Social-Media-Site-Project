@@ -64,7 +64,11 @@ router.get('/auth/google/callback',
     }), usersController.createSession);
 
 
+//when user decides to add or remove friend, then request to this route is fired
 router.patch('/toggle-friend', passport.checkAuthentication, usersController.toggleFriend);
+
+//update the status of any pending request
+router.patch('/update-friend-status', passport.checkAuthentication, usersController.updateRequestStatus);
 
 
 

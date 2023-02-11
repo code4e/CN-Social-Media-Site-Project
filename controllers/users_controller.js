@@ -6,12 +6,52 @@ const fs = require('fs');
 module.exports.profile = async (req, res) => {
     //convert to async
     try {
+
         //show the profile of the requested user
         let user = await User.findById(req.params.userID);
+
+
+        //handle pending friendship
+        let pending_friendship = await Friendship.findOne({
+            from_user: req.params.userID,
+            to_user: req.user.id,
+            is_pending: true
+        });
+
+        if (pending_friendship) {
+            return res.render('user_profile', {
+                title: 'Profile',
+                profile_user: user,
+                // user: loggedInUser,
+                type: "pending"
+            });
+        }
+
+        //handle sent friendship
+        let sent_friendship = await Friendship.findOne({
+            from_user: req.user.id,
+            to_user: req.params.userID,
+            is_pending: true
+        });
+        if (sent_friendship) {
+            return res.render('user_profile', {
+                title: 'Profile',
+                profile_user: user,
+                // user: loggedInUser,
+                type: "sent"
+            });
+        }
+
+        //handle rest
         return res.render('user_profile', {
             title: 'Profile',
-            profile_user: user
+            profile_user: user,
+            // user: loggedInUser,
+            type: "all"
         });
+
+
+
 
     } catch (error) {
         console.log(`Error occured with ${error}`);
@@ -19,7 +59,6 @@ module.exports.profile = async (req, res) => {
     }
 
     //check if the req was of type pending or sent, then accordingly send the response
-
 
     //callback code
     // //show the profile of the requested user
@@ -221,14 +260,12 @@ function checkFileExistsSync(filepath) {
     return flag;
 }
 
-
+//toggle friend to either add or remove other user as a friend
 module.exports.toggleFriend = async (req, res) => {
 
-    console.log(req.body);
+    // console.log(req.body);
 
     //check the toggle value, if the friend already exists, then remove it, otherwise add it
-
-
     if (req.body.toggleValue == "remove") {
         //remove friend
 
@@ -246,9 +283,11 @@ module.exports.toggleFriend = async (req, res) => {
             if (from_user && to_user) {
                 await User.findByIdAndUpdate(friendship.from_user,
                     { $pull: { friendships: friendship.id } });
+                from_user.save();
 
                 await User.findByIdAndUpdate(friendship.to_user,
                     { $pull: { friendships: friendship.id } });
+                to_user.save();
 
                 //remove the friendship
                 friendship.remove();
@@ -305,8 +344,85 @@ module.exports.toggleFriend = async (req, res) => {
             message: "Oops something went wrong!"
         })
     }
+}
+
+//if there are any pending requests, and if the current user takes action on it (accepts or rejects the friend request), then this action fires
+module.exports.updateRequestStatus = async (req, res) => {
+    //check if the friend request was accepted or rejected then take action accordingly
+
+    //accepted
+    if (req.body.status == "accept") {
+
+        try {
+            let friendship = await Friendship.findOne({ ...req.body });
+            if (friendship) {
+                //set the is_pending of the friendship to be true
+                let new_friendship = await Friendship.findByIdAndUpdate(friendship.id, {
+                    is_pending: false
+                }).populate('from_user');
+
+                console.log(new_friendship);
+
+                return res.status(200).json({
+                    message: "requested accepted",
+                    data: {
+                        friend: new_friendship.from_user.name
+                    }
+                });
+            }
+        } catch (error) {
+            return res.status(500).json({
+                message: "Internal Server Error"
+            });
+        }
+    }
+    //rejected. In case if requested is rejected, then remove it from the friendships and from user's friendship array as well
+    else if (req.body.status == "reject") {
+        try {
+            let friendship = await Friendship.findOne({ ...req.body });
+            if (friendship) {
+                //remove the friendships from the from_user and to_user
+                //remove the friendship from user's friendship array
+
+                let from_user = await User.findById(friendship.from_user);
+                let to_user = await User.findById(friendship.to_user);
+
+                if (from_user && to_user) {
+                    await User.findByIdAndUpdate(friendship.from_user,
+                        { $pull: { friendships: friendship.id } });
+                    from_user.save();
+
+                    await User.findByIdAndUpdate(friendship.to_user,
+                        { $pull: { friendships: friendship.id } });
+                    to_user.save();
+
+                    //remove the friendship
+                    friendship.remove();
+
+                    return res.status(200).json({
+                        message: "requested rejected",
+                        data: {
+                            friend: from_user.name
+                        }
+                    });
+                }
+
+
+            } else {
+                console.log('Error in rejecting the request');
+                return res.status(500).json({
+                    message: 'Error in rejecting the request'
+                });
+            }
 
 
 
+        } catch (error) {
+            return res.status(500).json({
+                message: "Internal Server Error"
+            });
+        }
 
+
+    }
 }

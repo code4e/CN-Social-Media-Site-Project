@@ -21,7 +21,9 @@ module.exports.home = async (req, res) => {
             $and: [
                 { is_pending: false },
             ]
-        });
+        }).populate('from_user').populate('to_user');
+
+        // console.log(established_friends);
 
         // the users who I've sent friend request to
         let sent_requests = await Friendship.find({
@@ -30,8 +32,6 @@ module.exports.home = async (req, res) => {
                 { is_pending: true },
             ]
         }).populate('from_user').populate('to_user');
-
-        // console.log(sent_requests);
 
 
         // the users who I've sent me the friend request

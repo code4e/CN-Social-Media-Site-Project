@@ -42,15 +42,18 @@
 
   <section id="user-friends">
     <div class="friends-container">
+
+
       <h4>Friends</h4>
       <% for( let u of locals.established_friends ) { %>
       <p>
-        <a href="/users/profile/<%= u.id %>?type=friend">
-          <%= u.name %>
-        </a>
+        <% if (u.to_user.id == locals.user.id) { %>
+          <a href="/users/profile/<%= u.from_user.id %>?type=friend"><%= u.from_user.name %></a>
+        <% } else if (u.from_user.id == locals.user.id) { %>
+          <a href="/users/profile/<%= u.to_user.id %>?type=friend"><%= u.to_user.name %></a>
+        <% } %> 
       </p>
       <% } %>
-
     </div>
 
     <br>

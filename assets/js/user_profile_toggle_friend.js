@@ -31,8 +31,6 @@
                         showSucessNotification('Friend request has been removed sucessfully');
                     });
                 }
-
-
             },
             error: function (error) {
                 console.log(error.responseText);
@@ -42,6 +40,4 @@
             }
         });
     });
-
-
 })();
