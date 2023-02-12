@@ -34,8 +34,9 @@
   <!-- 0 means friendship doesn't exist -->
   <!-- 1 means frienship is pending -->
   <!-- 2 means friendship is established -->
+
   <% for( let friend of locals.user.friendships ) { %>
-    <% if(friend.to_user == locals.user.id) { %>
+    <% if(friend.to_user == locals.user.id && friend.from_user == locals.profile_user.id) { %>
         <% if (friend.is_pending == false) { %>
             <% exists = 2 %> 
         <% } %>

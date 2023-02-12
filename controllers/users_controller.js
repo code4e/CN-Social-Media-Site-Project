@@ -42,6 +42,8 @@ module.exports.profile = async (req, res) => {
             });
         }
 
+        console.log('rest');
+
         //handle rest
         return res.render('user_profile', {
             title: 'Profile',
@@ -268,11 +270,13 @@ module.exports.toggleFriend = async (req, res) => {
     //check the toggle value, if the friend already exists, then remove it, otherwise add it
     if (req.body.toggleValue == "remove") {
         //remove friend
-
         //first, check if the frienship exists in the Friendship schema
-        let friendship = await Friendship.findOne(
-            { ...req.body }
-        );
+        let friendship = null;
+
+        //check friendship on both sides
+        let f1 = await Friendship.findOne({ from_user: req.body.from_user, to_user: req.body.to_user });
+        if (f1) friendship = f1;
+        else friendship = await Friendship.findOne({ from_user: req.body.to_user, to_user: req.body.from_user });
 
         if (friendship) {
             //remove the friendships from the from_user and to_user
@@ -379,7 +383,13 @@ module.exports.updateRequestStatus = async (req, res) => {
     //rejected. In case if requested is rejected, then remove it from the friendships and from user's friendship array as well
     else if (req.body.status == "reject") {
         try {
-            let friendship = await Friendship.findOne({ ...req.body });
+            let friendship = null;
+
+            //check friendship on both sides
+            let f1 = await Friendship.findOne({ from_user: req.body.from_user, to_user: req.body.to_user });
+            if (f1) friendship = f1;
+            else friendship = await Friendship.findOne({ from_user: req.body.to_user, to_user: req.body.from_user });
+
             if (friendship) {
                 //remove the friendships from the from_user and to_user
                 //remove the friendship from user's friendship array
